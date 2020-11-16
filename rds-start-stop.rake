@@ -116,7 +116,7 @@ namespace :aws do
       task :stop_step2 do
         run_locally do
           info 'scheduling stop step2 instances:' + fetch(:auto_start_stop_step2_target)
-          ServerManager.instance.autoscale_client.put_scheduled_update_group_action({
+     ServerManager.instance.autoscale_client.put_scheduled_update_group_action({
             auto_scaling_group_name: fetch(:auto_start_stop_step2_target),
             scheduled_action_name: 'StopMagentoWebInstances',
             start_time: Time.now + 5,
@@ -193,11 +193,9 @@ end
 namespace :munin do
   namespace :alert do
     desc 'start munin alert'
-    task :start do
-      on munin_host do
+    task :start       on munin_host do
         as :root do
-          if test :'[', '-e',  fetch(:munin_stop_mail_flag_path), ']'
-            execute :sudo, :rm, fetch(:munin_stop_mail_flag_path)
+          if test :'[', '-e',  fetch(:munin_sail_flag_path)
           end
         end
         fetch(:munin_stop_healthcheck_port_files).each do |file|
@@ -205,28 +203,4 @@ namespace :munin do
         end
       end
       on bastion_host do
-        fetch(:munin_stop_healthcheck_port_files).each do |file|
-          execute :sudo, :ln, '-nfs', '/usr/share/munin/plugins/custom-plugins/healthcheck_port', "/etc/munin/plugins/#{file}" 
-        end
-      end
-    end
-    desc 'stop munin alert'
-    task :stop do
-      on munin_host do
-        execute :sudo, :touch, fetch(:munin_stop_mail_flag_path)
-        fetch(:munin_stop_healthcheck_port_files).each do |file|
-          if test "[ -e /etc/munin/plugins/#{file} ]"
-            execute :sudo, :rm, "/etc/munin/plugins/#{file}"
-          end
-        end
-      end
-      on bastion_host do
-        fetch(:munin_stop_healthcheck_port_files).each do |file|
-          if test "[ -e /etc/munin/plugins/#{file} ]"
-            execute :sudo, :rm, "/etc/munin/plugins/#{file}"
-          end
-        end
-      end
-    end
-  end
-end
+        fetch(:munin_stop_healthcheck_port_files).eahare/mecute :sudo,        fetch(:munin_stop_healthcheck
